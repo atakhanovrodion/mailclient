@@ -1,0 +1,32 @@
+{
+  "yandex": {
+    "smtp": {
+      "host": "smtp.yandex.ru",
+      "port": 993
+    },
+    "imap": {
+      "host": "imap.yandex.ru",
+      "port": 465
+    }
+  },
+  "google": {
+    "smtp": {
+      "host": "smtp.gmail.com",
+      "port": 993
+    },
+    "imap": {
+      "host": "imap.gmail.com",
+      "port": 465
+    }
+  },
+  "mail": {
+    "smtp": {
+      "host": "smtp.mail.ru",
+      "port": 993
+    },
+    "imap": {
+      "host": "imap.mail.ru",
+      "port": 465
+    }
+  }
+}

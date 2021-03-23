@@ -1,0 +1,12 @@
+{
+  "imap": {
+    "host": "imap.yandex.ru",
+    "port": 993,
+    "auth": { "user": "kekwtest66@yandex.ru", "pass": "imap1488" }
+  },
+  "smtp": {
+    "host": "imap.yandex.ru",
+    "port": 993,
+    "auth": { "user": "kekwtest66@yandex.ru", "pass": "imap1488" }
+  }
+}

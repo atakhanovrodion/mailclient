@@ -1,0 +1,5 @@
+{
+  "host": "imap.mail.ru",
+  "port": 993,
+  "auth": { "user": "smtptest66@mail.ru", "pass": "imap1488" }
+}

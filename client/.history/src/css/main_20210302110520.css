@@ -1,0 +1,12 @@
+.appContainer {
+  display: grid;
+  grid-template-columns: 150px 1f;
+  grid-template-rows: 100px 1fr;
+}
+.header {
+  background-color: aqua;
+}
+
+.listOfMailboxes {
+  background-color: red;
+}
