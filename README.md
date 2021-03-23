@@ -1,9 +1,9 @@
 # mailclient
-electron react typesrypt 
+###electron react typesrypt 
 
-cd .\server\ 
-npm run dev
-cd .\client\ 
-npm run dev:react
-npm run dev:electron
-npm start
+*cd .\server\ 
+*npm run dev
+*cd .\client\ 
+*npm run dev:react </br>
+*npm run dev:electron
+*npm start
