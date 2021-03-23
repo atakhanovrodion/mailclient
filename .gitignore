@@ -1,4 +1,7 @@
+.gitignore
 client/node_modules
 server/node_modules
 client/todo
 .history
+client/.history
+server/.history
