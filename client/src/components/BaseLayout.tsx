@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as React from "react";
 import Login from "./Login";
 import * as api from "../api";
@@ -6,6 +7,7 @@ import ListOfMailboxes from "./ListOfMailboxes";
 import ListOfMessages from "./ListOfMessages";
 import WaitView from "./WaitView";
 import MessageView from "./MessageView";
+
 type MyState = {
   isAuth: false;
   loginEmail: string;
@@ -27,7 +29,7 @@ type MyState = {
   isErr: boolean;
 };
 
-class BaseLayout extends React.Component {
+class BaseLayout extends React.Component<{}, MyState> {
   constructor(props: any) {
     super(props);
     this.handleInput = this.handleInput.bind(this);
@@ -39,27 +41,28 @@ class BaseLayout extends React.Component {
     this.fieldHandler = this.fieldHandler.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.errHandler = this.errHandler.bind(this);
+    this.state = {
+      isAuth: false,
+      loginEmail: "kekwtest66@yandex.ru",
+      loginPassword: "imap1488",
+      currenEmail: "undefined",
+      currentHost: "",
+      currentMailboxList: [],
+      currentMessageBody: "",
+      currentMailbox: "INBOX",
+      currentPassword: "",
+      listOfMailboxes: [],
+      listOfMessages: [],
+      errorText: "",
+      waitState: false,
+      viewState: "list",
+      date: new Date(),
+      from: "",
+      subject: "",
+      isErr: false,
+    };
   }
-  state: MyState = {
-    isAuth: false,
-    loginEmail: "kekwtest66@yandex.ru",
-    loginPassword: "imap1488",
-    currenEmail: "undefined",
-    currentHost: "",
-    currentMailboxList: [],
-    currentMessageBody: "",
-    currentMailbox: "INBOX",
-    currentPassword: "",
-    listOfMailboxes: [],
-    listOfMessages: [],
-    errorText: "",
-    waitState: false,
-    viewState: "list",
-    date: new Date(),
-    from: "",
-    subject: "",
-    isErr: false,
-  };
+
   render() {
     return (
       <div>
@@ -90,7 +93,7 @@ class BaseLayout extends React.Component {
             />
           </div>
           <div className="centerArea">
-            {this.state.viewState == "list" ? (
+            {this.state.viewState === "list" ? (
               <ListOfMessages
                 messages={this.state.listOfMessages}
                 onClick={this.getMessage}
@@ -122,19 +125,18 @@ class BaseLayout extends React.Component {
   }
 
   async tryAuth(): Promise<void> {
-    let domain: string = findDomain(this.state.loginEmail);
+    const domain: string = findDomain(this.state.loginEmail);
     const info: api.IAuthInfo = {
       user: this.state.loginEmail,
       password: this.state.loginPassword,
-      host: "imap." + domain,
-      hostsmtp: "smtp." + domain,
+      host: `imap.${domain}`,
+      hostsmtp: `smtp.${domain}`,
       port: 993,
     };
     this.setState({
       waitState: true,
     });
-    const apiWorker = new api.Worker();
-    if ((await apiWorker.tryAuth(info)) == "succes") {
+    if ((await api.Worker.tryAuth(info)) === "succes") {
       const data = {
         loginEmail: "",
         loginPassword: "",
@@ -146,7 +148,7 @@ class BaseLayout extends React.Component {
       this.setState(data);
       console.log(this.state);
       this.getListOfMailboxes();
-      //TODO
+      // TODO
       this.getMailbox("INBOx");
     } else {
       this.setState({
@@ -161,8 +163,7 @@ class BaseLayout extends React.Component {
     this.setState({
       waitState: true,
     });
-    const apiWorker = new api.Worker();
-    const mailboxes = await apiWorker.listOfMailboxes();
+    const mailboxes = await api.Worker.listOfMailboxes();
     this.setState({ listOfMailboxes: mailboxes });
   }
 
@@ -170,8 +171,7 @@ class BaseLayout extends React.Component {
     this.setState({
       waitState: true,
     });
-    const apiWorker: api.Worker = new api.Worker();
-    const messages: api.IMessage[] = await apiWorker.getMailbox(path);
+    const messages: api.IMessage[] = await api.Worker.getMailbox(path);
     this.setState({
       listOfMessages: messages,
       currentMailbox: path,
@@ -186,8 +186,7 @@ class BaseLayout extends React.Component {
     this.setState({
       waitState: true,
     });
-    const apiWorker: api.Worker = new api.Worker();
-    const messageBody: string = await apiWorker.getMessage(
+    const messageBody: string = await api.Worker.getMessage(
       this.state.currentMailbox,
       message.id.toString()
     );
@@ -200,16 +199,16 @@ class BaseLayout extends React.Component {
       subject: message.subject,
     });
   }
+
   async sendMessage(): Promise<void> {
     this.setState({ waitState: true });
-    const apiWorker = new api.Worker();
     if (
-      (await apiWorker.sendMessage(
+      (await api.Worker.sendMessage(
         this.state.from,
         this.state.currenEmail,
         this.state.subject,
         this.state.currentMessageBody
-      )) == "ok"
+      )) === "ok"
     ) {
       console.log("suc");
       this.setState({
@@ -223,6 +222,7 @@ class BaseLayout extends React.Component {
       this.setState({ waitState: false, isErr: true });
     }
   }
+
   changeView(): void {
     this.setState({
       viewState: "new",
@@ -231,6 +231,7 @@ class BaseLayout extends React.Component {
       currentMessageBody: "",
     });
   }
+
   signOut(): void {
     this.setState({
       isAuth: false,
@@ -240,11 +241,13 @@ class BaseLayout extends React.Component {
       viewState: "list",
     });
   }
+
   fieldHandler(e: any): void {
     const target: string = e.target.id;
     console.log(target);
     this.setState({ [target]: e.target.value });
   }
+
   errHandler() {
     this.setState({
       isErr: false,
@@ -253,13 +256,13 @@ class BaseLayout extends React.Component {
 }
 export default BaseLayout;
 
-//TODO
-//email validation
+// TODO
+// email validation
 function findDomain(address: string): string {
   let i = 0;
   let domain = "";
   while (i < address.length) {
-    if (address[i] == "@") {
+    if (address[i] === "@") {
       if (address[i + 1]) {
         let j = i + 1;
         while (j < address.length) {

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from "react";
 import { withStyles } from "@material-ui/styles";
 import Dialog from "@material-ui/core/Dialog";
@@ -29,36 +31,34 @@ const Login: React.FC<Props> = ({
   pass,
   classes,
   errorText,
-}) => {
-  return (
-    <Dialog
-      open={!isOpen}
-      disableBackdropClick={true}
-      disableEscapeKeyDown={true}
-      fullWidth={true}
-      classes={{ paper: classes.dialogPaper }}
-    >
-      <form className="loginForm">
-        <TextField
-          id="loginEmail"
-          onChange={onChange}
-          label="email"
-          value={user}
-          error={errorText !== ""}
-        />
-        <TextField
-          id="loginPassword"
-          onChange={onChange}
-          label="password"
-          type="password"
-          value={pass}
-          error={errorText !== ""}
-          helperText={errorText !== "" ? "incorrect email or address" : ""}
-        />
-        <Button onClick={onSubmit}>Sign in</Button>
-      </form>
-    </Dialog>
-  );
-};
+}) => (
+  <Dialog
+    open={!isOpen}
+    disableBackdropClick
+    disableEscapeKeyDown
+    fullWidth
+    classes={{ paper: classes.dialogPaper }}
+  >
+    <form className="loginForm">
+      <TextField
+        id="loginEmail"
+        onChange={onChange}
+        label="email"
+        value={user}
+        error={errorText !== ""}
+      />
+      <TextField
+        id="loginPassword"
+        onChange={onChange}
+        label="password"
+        type="password"
+        value={pass}
+        error={errorText !== ""}
+        helperText={errorText !== "" ? "incorrect email or address" : ""}
+      />
+      <Button onClick={onSubmit}>Sign in</Button>
+    </form>
+  </Dialog>
+);
 
 export default withStyles(styles)(Login);

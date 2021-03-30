@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import axios, { AxiosResponse } from "axios";
 
 export interface IAuthInfo {
@@ -20,32 +22,36 @@ export interface IMessage {
 }
 
 export class Worker {
-  public async tryAuth(info: IAuthInfo): Promise<string> {
+  public static async tryAuth(info: IAuthInfo): Promise<string> {
     const response: AxiosResponse = await axios.post(
       "http://localhost:3001/auth",
       info
     );
     return response.data;
   }
-  public async listOfMailboxes(): Promise<IMailbox[]> {
+
+  public static async listOfMailboxes(): Promise<IMailbox[]> {
     const response: AxiosResponse = await axios.get(
       "http://localhost:3001/mailboxes"
     );
     return response.data;
   }
-  public async getMailbox(mailbox: string): Promise<IMessage[]> {
+
+  public static async getMailbox(mailbox: string): Promise<IMessage[]> {
     const response: AxiosResponse = await axios.get(
       `http://localhost:3001/mailboxes/${mailbox}`
     );
     return response.data;
   }
-  public async getMessage(mailbox: string, id: string): Promise<string> {
+
+  public static async getMessage(mailbox: string, id: string): Promise<string> {
     const response: AxiosResponse = await axios.get(
       `http://localhost:3001/mailboxes/${mailbox}/${id}`
     );
     return response.data;
   }
-  public async sendMessage(
+
+  public static async sendMessage(
     to: string,
     from: string,
     subject: string,
@@ -53,7 +59,7 @@ export class Worker {
   ): Promise<string> {
     const response: AxiosResponse = await axios.post(
       "http://localhost:3001/message",
-      { to: to, from: from, subject: subject, text: message }
+      { to, from, subject, text: message }
     );
     return response.data;
   }
