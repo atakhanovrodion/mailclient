@@ -12,7 +12,8 @@
     "lint:fix": "eslint --ignore-path .gitignore . --ext .ts,.tsx --fix",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(json|ts|tsx)\"",
     "type-check": "tsc",
-    "validate": "npm run type-check && npm run lint"
+    "validate": "npm run type-check && npm run lint",
+    "prepare": "cd .. && husky install ./client/.husky"
   },
   "keywords": [],
   "author": "",
