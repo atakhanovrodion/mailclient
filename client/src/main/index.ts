@@ -1,10 +1,9 @@
 /* eslint-disable */
-
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow } from "electron";
 import path from "path";
 import url from "url";
 
-let mainWindow: Electron.BrowserWindow | null;
+let mainWindow: BrowserWindow | null;
 
 const createWindow = function (): void {
   mainWindow = new BrowserWindow({
@@ -21,7 +20,3 @@ const createWindow = function (): void {
 };
 
 app.on("ready", createWindow);
-console.log("ss");
-ipcMain.on("test", (enent, arg) => {
-  console.log(arg);
-});
