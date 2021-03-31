@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 import * as React from "react";
 import Login from "./Login";
 import * as api from "../api";
@@ -9,10 +10,10 @@ import WaitView from "./WaitView";
 import MessageView from "./MessageView";
 
 type MyState = {
-  isAuth: false;
+  isAuth: boolean;
   loginEmail: string;
   loginPassword: string;
-  currenEmail: string;
+  currentEmail: string;
   currentPassword: string;
   listOfMailboxes: api.IMailbox[];
   listOfMessages: api.IMessage[];
@@ -23,7 +24,7 @@ type MyState = {
   errorText: string;
   waitState: boolean;
   viewState: string;
-  date: Date;
+  date: string;
   from: string;
   subject: string;
   isErr: boolean;
@@ -38,14 +39,13 @@ class BaseLayout extends React.Component<{}, MyState> {
     this.getMailbox = this.getMailbox.bind(this);
     this.getMessage = this.getMessage.bind(this);
     this.changeView = this.changeView.bind(this);
-    this.fieldHandler = this.fieldHandler.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.errHandler = this.errHandler.bind(this);
     this.state = {
       isAuth: false,
       loginEmail: "kekwtest66@yandex.ru",
       loginPassword: "imap1488",
-      currenEmail: "undefined",
+      currentEmail: "undefined",
       currentHost: "",
       currentMailboxList: [],
       currentMessageBody: "",
@@ -56,7 +56,7 @@ class BaseLayout extends React.Component<{}, MyState> {
       errorText: "",
       waitState: false,
       viewState: "list",
-      date: new Date(),
+      date: "",
       from: "",
       subject: "",
       isErr: false,
@@ -80,7 +80,7 @@ class BaseLayout extends React.Component<{}, MyState> {
           <div className="header">
             <Header
               onClick={this.signOut}
-              currentEmail={this.state.currenEmail}
+              currentEmail={this.state.currentEmail}
               isAuth={this.state.isAuth}
               changeView={this.changeView}
             />
@@ -107,7 +107,7 @@ class BaseLayout extends React.Component<{}, MyState> {
                 subject={this.state.subject}
                 onClick={this.getMailbox}
                 mailbox={this.state.currentMailbox}
-                onChange={this.fieldHandler}
+                onChange={this.handleInput}
                 sendMessage={this.sendMessage}
                 isErr={this.state.isErr}
                 errHandler={this.errHandler}
@@ -121,7 +121,16 @@ class BaseLayout extends React.Component<{}, MyState> {
 
   handleInput(e: any): void {
     const target: string = e.target.id;
-    this.setState({ [target]: e.target.value });
+
+    if (
+      target ===
+      ("currentMessageBody" ||
+        "currentPassword" ||
+        "currentEmail" ||
+        "from" ||
+        "subject")
+    )
+      this.setState({ [target]: e.target.value });
   }
 
   async tryAuth(): Promise<void> {
@@ -141,7 +150,7 @@ class BaseLayout extends React.Component<{}, MyState> {
         loginEmail: "",
         loginPassword: "",
         isAuth: true,
-        currenEmail: this.state.loginEmail,
+        currentEmail: this.state.loginEmail,
         currentPassword: this.state.loginPassword,
         currentHost: domain,
       };
@@ -190,6 +199,7 @@ class BaseLayout extends React.Component<{}, MyState> {
       this.state.currentMailbox,
       message.id.toString()
     );
+    console.log(message.date);
     this.setState({
       currentMessageBody: messageBody,
       waitState: false,
@@ -205,7 +215,7 @@ class BaseLayout extends React.Component<{}, MyState> {
     if (
       (await api.Worker.sendMessage(
         this.state.from,
-        this.state.currenEmail,
+        this.state.currentEmail,
         this.state.subject,
         this.state.currentMessageBody
       )) === "ok"
@@ -240,12 +250,6 @@ class BaseLayout extends React.Component<{}, MyState> {
       errorText: "",
       viewState: "list",
     });
-  }
-
-  fieldHandler(e: any): void {
-    const target: string = e.target.id;
-    console.log(target);
-    this.setState({ [target]: e.target.value });
   }
 
   errHandler() {
