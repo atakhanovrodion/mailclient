@@ -10,7 +10,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 type Props = {
   messageText: string;
   viewState: string;
-  date: Date;
+  date: string;
   from: string;
   subject: string;
   onClick: any;
@@ -43,7 +43,8 @@ const MessageView: React.FC<Props> = ({
               variant="outlined"
               fullWidth
               disabled
-              value={new Date(date).toLocaleDateString()}
+              //DATE PARSE
+              value={date}
               label="date"
               inputProps={{ style: { color: "#000000" } }}
             />

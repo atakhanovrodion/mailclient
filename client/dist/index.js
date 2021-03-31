@@ -2,10 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/electron/index.ts":
-/*!*******************************!*\
-  !*** ./src/electron/index.ts ***!
-  \*******************************/
+/***/ "./src/main/index.ts":
+/*!***************************!*\
+  !*** ./src/main/index.ts ***!
+  \***************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -30,10 +30,6 @@ var createWindow = function createWindow() {
 };
 
 electron__WEBPACK_IMPORTED_MODULE_0__.app.on("ready", createWindow);
-console.log("ss");
-electron__WEBPACK_IMPORTED_MODULE_0__.ipcMain.on("test", function (enent, arg) {
-  console.log(arg);
-});
 
 /***/ }),
 
@@ -116,7 +112,7 @@ module.exports = require("electron");;
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__("./src/electron/index.ts");
+/******/ 	__webpack_require__("./src/main/index.ts");
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
