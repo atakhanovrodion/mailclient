@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import * as React from "react";
 import Login from "./Login";
 import * as api from "../api";
@@ -8,17 +6,15 @@ import ListOfMailboxes from "./ListOfMailboxes";
 import ListOfMessages from "./ListOfMessages";
 import WaitView from "./WaitView";
 import MessageView from "./MessageView";
+import findDomain from "./helper";
 
 type MyState = {
   isAuth: boolean;
   loginEmail: string;
   loginPassword: string;
   currentEmail: string;
-  currentPassword: string;
   listOfMailboxes: api.IMailbox[];
   listOfMessages: api.IMessage[];
-  currentHost: string;
-  currentMailboxList: [];
   currentMessageBody: string;
   currentMailbox: string;
   errorText: string;
@@ -46,11 +42,8 @@ class BaseLayout extends React.Component<{}, MyState> {
       loginEmail: "kekwtest66@yandex.ru",
       loginPassword: "imap1488",
       currentEmail: "undefined",
-      currentHost: "",
-      currentMailboxList: [],
       currentMessageBody: "",
       currentMailbox: "INBOX",
-      currentPassword: "",
       listOfMailboxes: [],
       listOfMessages: [],
       errorText: "",
@@ -61,62 +54,6 @@ class BaseLayout extends React.Component<{}, MyState> {
       subject: "",
       isErr: false,
     };
-  }
-
-  render() {
-    return (
-      <div>
-        <Login
-          onSubmit={this.tryAuth}
-          onChange={this.handleInput}
-          isOpen={this.state.isAuth}
-          user={this.state.loginEmail}
-          pass={this.state.loginPassword}
-          errorText={this.state.errorText}
-        />
-        <WaitView state={this.state.waitState} />
-
-        <div className="appContainer">
-          <div className="header">
-            <Header
-              onClick={this.signOut}
-              currentEmail={this.state.currentEmail}
-              isAuth={this.state.isAuth}
-              changeView={this.changeView}
-            />
-          </div>
-          <div className="listOfMailboxes">
-            <ListOfMailboxes
-              mailboxes={this.state.listOfMailboxes}
-              onClick={this.getMailbox}
-              mailbox={this.state.currentMailbox}
-            />
-          </div>
-          <div className="centerArea">
-            {this.state.viewState === "list" ? (
-              <ListOfMessages
-                messages={this.state.listOfMessages}
-                onClick={this.getMessage}
-              />
-            ) : (
-              <MessageView
-                viewState={this.state.viewState}
-                messageText={this.state.currentMessageBody}
-                date={this.state.date}
-                from={this.state.from}
-                subject={this.state.subject}
-                onClick={this.getMailbox}
-                mailbox={this.state.currentMailbox}
-                onChange={this.handleInput}
-                sendMessage={this.sendMessage}
-                isErr={this.state.isErr}
-                errHandler={this.errHandler}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    );
   }
 
   handleInput(e: any): void {
@@ -131,41 +68,6 @@ class BaseLayout extends React.Component<{}, MyState> {
         "subject")
     )
       this.setState({ [target]: e.target.value });
-  }
-
-  async tryAuth(): Promise<void> {
-    const domain: string = findDomain(this.state.loginEmail);
-    const info: api.IAuthInfo = {
-      user: this.state.loginEmail,
-      password: this.state.loginPassword,
-      host: `imap.${domain}`,
-      hostsmtp: `smtp.${domain}`,
-      port: 993,
-    };
-    this.setState({
-      waitState: true,
-    });
-    if ((await api.Worker.tryAuth(info)) === "succes") {
-      const data = {
-        loginEmail: "",
-        loginPassword: "",
-        isAuth: true,
-        currentEmail: this.state.loginEmail,
-        currentPassword: this.state.loginPassword,
-        currentHost: domain,
-      };
-      this.setState(data);
-      console.log(this.state);
-      this.getListOfMailboxes();
-      // TODO
-      this.getMailbox("INBOx");
-    } else {
-      this.setState({
-        errorText: "err",
-        waitState: false,
-      });
-    }
-    this.setState({ loginEmail: "", loginPassword: "" });
   }
 
   async getListOfMailboxes(): Promise<void> {
@@ -188,18 +90,17 @@ class BaseLayout extends React.Component<{}, MyState> {
       currentMessageBody: "",
       viewState: "list",
     });
-    console.log(this.state);
   }
 
   async getMessage(message: api.IMessage): Promise<void> {
     this.setState({
       waitState: true,
     });
+    const { currentMailbox } = this.state;
     const messageBody: string = await api.Worker.getMessage(
-      this.state.currentMailbox,
+      currentMailbox,
       message.id.toString()
     );
-    console.log(message.date);
     this.setState({
       currentMessageBody: messageBody,
       waitState: false,
@@ -210,17 +111,49 @@ class BaseLayout extends React.Component<{}, MyState> {
     });
   }
 
+  async tryAuth(): Promise<void> {
+    const { loginEmail, loginPassword } = this.state;
+    const domain: string = findDomain(loginEmail);
+    const info: api.IAuthInfo = {
+      user: loginEmail,
+      password: loginPassword,
+      host: `imap.${domain}`,
+      hostsmtp: `smtp.${domain}`,
+      port: 993,
+    };
+    this.setState({
+      waitState: true,
+    });
+    if ((await api.Worker.tryAuth(info)) === "succes") {
+      this.setState({
+        loginEmail: "",
+        loginPassword: "",
+        isAuth: true,
+        currentEmail: loginEmail,
+      });
+      this.getListOfMailboxes();
+      // TODO
+      this.getMailbox("INBOx");
+    } else {
+      this.setState({
+        errorText: "err",
+        waitState: false,
+      });
+    }
+    this.setState({ loginEmail: "", loginPassword: "" });
+  }
+
   async sendMessage(): Promise<void> {
     this.setState({ waitState: true });
+    const { from, currentEmail, subject, currentMessageBody } = this.state;
     if (
       (await api.Worker.sendMessage(
-        this.state.from,
-        this.state.currentEmail,
-        this.state.subject,
-        this.state.currentMessageBody
+        from,
+        currentEmail,
+        subject,
+        currentMessageBody
       )) === "ok"
     ) {
-      console.log("suc");
       this.setState({
         waitState: false,
         from: "",
@@ -228,7 +161,6 @@ class BaseLayout extends React.Component<{}, MyState> {
         currentMessageBody: "",
       });
     } else {
-      console.log("fail");
       this.setState({ waitState: false, isErr: true });
     }
   }
@@ -257,25 +189,78 @@ class BaseLayout extends React.Component<{}, MyState> {
       isErr: false,
     });
   }
+
+  render() {
+    const {
+      isAuth,
+      loginEmail,
+      loginPassword,
+      errorText,
+      waitState,
+      currentEmail,
+      listOfMailboxes,
+      currentMailbox,
+      listOfMessages,
+      viewState,
+      currentMessageBody,
+      date,
+      from,
+      subject,
+      isErr,
+    } = this.state;
+    return (
+      <div>
+        <Login
+          onSubmit={this.tryAuth}
+          onChange={this.handleInput}
+          isOpen={isAuth}
+          user={loginEmail}
+          pass={loginPassword}
+          errorText={errorText}
+        />
+        <WaitView state={waitState} />
+
+        <div className="appContainer">
+          <div className="header">
+            <Header
+              onClick={this.signOut}
+              currentEmail={currentEmail}
+              isAuth={isAuth}
+              changeView={this.changeView}
+            />
+          </div>
+          <div className="listOfMailboxes">
+            <ListOfMailboxes
+              mailboxes={listOfMailboxes}
+              onClick={this.getMailbox}
+              mailbox={currentMailbox}
+            />
+          </div>
+          <div className="centerArea">
+            {viewState === "list" ? (
+              <ListOfMessages
+                messages={listOfMessages}
+                onClick={this.getMessage}
+              />
+            ) : (
+              <MessageView
+                viewState={viewState}
+                messageText={currentMessageBody}
+                date={date}
+                from={from}
+                subject={subject}
+                onClick={this.getMailbox}
+                mailbox={currentMailbox}
+                onChange={this.handleInput}
+                sendMessage={this.sendMessage}
+                isErr={isErr}
+                errHandler={this.errHandler}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 export default BaseLayout;
-
-// TODO
-// email validation
-function findDomain(address: string): string {
-  let i = 0;
-  let domain = "";
-  while (i < address.length) {
-    if (address[i] === "@") {
-      if (address[i + 1]) {
-        let j = i + 1;
-        while (j < address.length) {
-          domain += address[j];
-          j++;
-        }
-      }
-    }
-    i++;
-  }
-  return domain;
-}
