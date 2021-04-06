@@ -1,11 +1,11 @@
-/* eslint-disable */
 import { app, BrowserWindow } from "electron";
-import path from "path";
-import url from "url";
+
+// import path from "path";
+// import url from "url";
 
 let mainWindow: BrowserWindow | null;
 
-const createWindow = function (): void {
+const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,

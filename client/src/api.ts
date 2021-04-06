@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import axios, { AxiosResponse } from "axios";
 
 export interface IAuthInfo {
